@@ -1,0 +1,60 @@
+﻿@model MotivityTravels.Models.TravelDetails
+@{
+    ViewData["Title"] = "Home Page";
+}
+<h1>Motivity Travels</h1>
+<form method="post"  asp-controller="Home" asp-action="VoiceRecord">
+    <div class="col-md-6">
+        <label>
+            Use voice search or enter travel details
+        </label>
+        <button>
+            <img src="/Images/mic.svg" />
+        </button>
+    </div>
+</form>
+@*<div>  
+    @{  
+        Html.RenderPartial("_Index");  
+    }  
+</div>*@ 
+
+<form class="row g-3" asp-action="PostTravelDetails">
+    <div class="col-md-6">
+        <label asp-for="FromSource" class="form-label"></label>
+        <input asp-for="FromSource" class="form-control" />
+        <span asp-validation-for="FromSource" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ToDestination" class="form-label"></label>
+        <input asp-for="ToDestination" class="form-control" />
+        <span asp-validation-for="ToDestination" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="FromDate" class="form-label"></label>
+        <input asp-for="FromDate" class="form-control" />
+        <span asp-validation-for="FromDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ToDate" class="form-label"></label>
+        <input asp-for="ToDate" class="form-control" />
+        <span asp-validation-for="ToDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ParentsCount" class="form-label"></label>
+        <input asp-for="ParentsCount" class="form-control" />
+        <span asp-validation-for="ParentsCount" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ChildernCount" class="form-label"></label>
+        <input asp-for="ChildernCount" class="form-control" />
+        <span asp-validation-for="ChildernCount" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
