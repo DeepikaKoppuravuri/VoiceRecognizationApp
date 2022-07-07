@@ -63,11 +63,15 @@ namespace MotivityTravels.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
+                        ViewData["message"] = "Data saved successfully! ";
                         ModelState.Clear();
                         return View("Index");
                     }
                     else
+                    {
+                        ViewData["message"] = "Data not saved ";
                         return View("Index");
+                    }
                 }
             }
             catch (Exception)

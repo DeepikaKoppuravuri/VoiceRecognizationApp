@@ -13,6 +13,16 @@
         </button>
     </div>
 </form>
+@if (ViewData["message"] != null)
+{
+   <script type="text/javascript">
+       debugger;
+window.onload = function() {
+    alert("@ViewData["message"]");
+}
+       </script>
+}
+
 @*<div>  
     @{  
         Html.RenderPartial("_Index");  
