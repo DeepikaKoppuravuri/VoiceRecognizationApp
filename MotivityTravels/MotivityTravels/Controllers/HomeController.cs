@@ -25,11 +25,10 @@ namespace MotivityTravels.Controllers
         [HttpPost]
         public async Task<IActionResult> VoiceRecord()
         {
+            TravelDetails entities = new TravelDetails();
+            Common commonLogic = new Common();
             try
-            
             {
-                TravelDetails entities = new TravelDetails();               
-                Common commonLogic = new Common();
                 entities = await commonLogic.GetEntities();
 
                 return View("Index", entities);
@@ -37,6 +36,11 @@ namespace MotivityTravels.Controllers
             catch(Exception ee)
             {
                 throw new Exception(ee.Message);
+            }
+            finally
+            {
+                entities = null;
+                commonLogic = null;
             }
         }
 
@@ -69,6 +73,10 @@ namespace MotivityTravels.Controllers
             catch (Exception)
             {
                 throw;
+            }
+            finally
+            {
+                details = null;
             }
         }
 
