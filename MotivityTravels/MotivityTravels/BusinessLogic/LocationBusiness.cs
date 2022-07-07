@@ -13,10 +13,9 @@ namespace MotivityTravels.BusinessLogic
         //this method will return user source and destination 
         public async Task<TravelDetails> GetUserLocationInformation(Root root)
         {
+            TravelDetails checkLocationDetails = new TravelDetails();
             try
             {
-                TravelDetails checkLocationDetails = new TravelDetails();
-
                 if (root.prediction.entities.Destination != null)
                 {
 
@@ -37,27 +36,37 @@ namespace MotivityTravels.BusinessLogic
 
                 throw;
             }
+            finally
+            {
+                checkLocationDetails = null;
+            }
         }
 
         //this method will execute, in case of source or destination are missing
         public async Task<TravelDetails> GetSpecificEntities()
         {
+            Common _commonServices = new Common();
+            TravelDetails entities = new TravelDetails();
             try
             {
-                Common _commonServices = new Common();
-                TravelDetails entities = new TravelDetails();
                 string textFromSource = "please tell us from source and to destination";
                 Root locationEntities = await _commonServices.GetSpecificUserIntent(textFromSource);
                 TravelDetails locationEntity = await _commonServices.CheckUserEntities(locationEntities);
                 entities.FromSource = locationEntity.FromSource;
                 entities.ToDestination = locationEntity.ToDestination;
-
                 return entities;
             }
             catch (Exception)
             {
 
                 throw;
+            }
+            finally
+            {
+                entities = null;
+                _commonServices = null;
+
+
             }
         }
     }

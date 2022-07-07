@@ -20,93 +20,151 @@ namespace MotivityTravels.BusinessLogic
         public async Task<TravelDetails> GetEntities()
         {
             TravelDetails entities = new TravelDetails();
-            string text = _speechServices.GetTextFromMicAsync().Result;
+            try
+            {
+                string text = _speechServices.GetTextFromMicAsync().Result;
 
-            Root intents = await _speechServices.GetIntents("9fd4c3541f074790870cbca4739be190", "https://eastus.api.cognitive.microsoft.com/", "4cf080b3-821a-4f38-8816-d356313b5bd2", text);
-          
-            entities = await CheckUserEntities(intents);
-            entities = await CheckUserAllEntities(entities);
+                Root intents = await _speechServices.GetIntents("9fd4c3541f074790870cbca4739be190", "https://eastus.api.cognitive.microsoft.com/", "4cf080b3-821a-4f38-8816-d356313b5bd2", text);
 
-            return entities;
+                entities = await CheckUserEntities(intents);
+                entities = await CheckUserAllEntities(entities);
+
+                return entities;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                entities = null;
+            }
         }
 
         public async Task<TravelDetails> CheckUserEntities(Root root)
         {
             TravelDetails details = new TravelDetails();
-            string intent = root.prediction.topIntent;
-            switch(intent.ToLower())
+            try
             {
-                case "location":
-                    {
-                        details = await _locationEntities.GetUserLocationInformation(root);
-                        break;
-                    }
-                case "dates":
-                    {
-                        details = await _dateEntities.GetUserTravelDateInformation(root);
-                        break ;
-                    }
-                case "persons":
-                    {
-                        details = await _peopleEntities.CheckPersonEntities(root);
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
+                string intent = root.prediction.topIntent;
+                switch (intent.ToLower())
+                {
+                    case "location":
+                        {
+                            details = await _locationEntities.GetUserLocationInformation(root);
+                            break;
+                        }
+                    case "dates":
+                        {
+                            details = await _dateEntities.GetUserTravelDateInformation(root);
+                            break;
+                        }
+                    case "persons":
+                        {
+                            details = await _peopleEntities.CheckPersonEntities(root);
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+                return details;
             }
-            return details;
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                details = null;
+                root = null;
+            }
         }
         public async Task<TravelDetails> CheckUserAllEntities(TravelDetails entities)
         {
-            if (entities.FromSource == "" || entities.ToDestination == "")
+            try
             {
-                TravelDetails locationEntities = await _locationEntities.GetSpecificEntities();
-                entities.FromSource = locationEntities.FromSource;
-                entities.ToDestination = locationEntities.ToDestination;
+                if (entities.FromSource == "" || entities.ToDestination == "")
+                {
+                    TravelDetails locationEntities = await _locationEntities.GetSpecificEntities();
+                    entities.FromSource = locationEntities.FromSource;
+                    entities.ToDestination = locationEntities.ToDestination;
+                }
+                if (entities.FromDate == null || entities.ToDate == null)
+                {
+                    TravelDetails dateEntities = await _dateEntities.GetSpecificTravelDateEntities();
+                    entities.FromDate = dateEntities.FromDate;
+                    entities.ToDate = dateEntities.ToDate;
+                }
+                if (entities.ParentsCount == 0 || entities.ChildernCount == 0)
+                {
+                    TravelDetails personsEntities = await _peopleEntities.GetSpecificPersonEntities();
+                    entities.ParentsCount = personsEntities.ParentsCount;
+                    entities.ChildernCount = personsEntities.ChildernCount;
+                }
+                if (entities.FromSource == "" || entities.ToDestination == "" || entities.FromDate == null || entities.ToDate == null ||
+                    entities.ParentsCount == 0 || entities.ChildernCount == 0)
+                {
+                    string speechText = "we are unable to identify few details, please enter manually..";
+                    await TextToSpeech(speechText);
+                }
+                return entities;
             }
-            if (entities.FromDate == null || entities.ToDate == null)
+            catch (Exception)
             {
-                TravelDetails dateEntities = await _dateEntities.GetSpecificTravelDateEntities();
-                entities.FromDate = dateEntities.FromDate;
-                entities.ToDate = dateEntities.ToDate;
+
+                throw;
             }
-            if (entities.ParentsCount == 0 || entities.ChildernCount == 0)
+            finally
             {
-                TravelDetails personsEntities = await _peopleEntities.GetSpecificPersonEntities();
-                entities.ParentsCount = personsEntities.ParentsCount;
-                entities.ChildernCount = personsEntities.ChildernCount;
+                entities = null;
             }
-            if (entities.FromSource == "" || entities.ToDestination == "" || entities.FromDate == null || entities.ToDate == null ||
-                entities.ParentsCount == 0 || entities.ChildernCount == 0)
-            {
-                string speechText = "we are unable to identify few details, please enter manually..";
-                await TextToSpeech(speechText);
-            }
-            return entities;
         }
         public async Task<Root> GetSpecificUserIntent(string speechText)
         {
-            await TextToSpeech(speechText);
-            string userSpeech = string.Empty;
             Root root = new Root();
-            userSpeech = await _speechServices.GetTextFromMicAsync();
-            root = await _speechServices.GetIntents("9fd4c3541f074790870cbca4739be190", "https://eastus.api.cognitive.microsoft.com/", "4cf080b3-821a-4f38-8816-d356313b5bd2", userSpeech);
-            
-            return root;
+            try
+            {
+                await TextToSpeech(speechText);
+                string userSpeech = string.Empty;
+                userSpeech = await _speechServices.GetTextFromMicAsync();
+                root = await _speechServices.GetIntents("9fd4c3541f074790870cbca4739be190", "https://eastus.api.cognitive.microsoft.com/", "4cf080b3-821a-4f38-8816-d356313b5bd2", userSpeech);
+
+                return root;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                speechText = null;
+                root = null;
+            }
         }
         public async Task TextToSpeech(string speechText)
         {
-            var config = SpeechConfig.FromSubscription("c7c252ec4cdc426cadd3d96bff0918e0", "eastus");
+            try
+            {
+                var config = SpeechConfig.FromSubscription("c7c252ec4cdc426cadd3d96bff0918e0", "eastus");
 
-            // for speak slag
-            // config.SpeechSynthesisVoiceName = "en-GB-RyanNeural";
+                // for speak slag
+                // config.SpeechSynthesisVoiceName = "en-GB-RyanNeural";
 
-            using var synthesizer = new SpeechSynthesizer(config);
-           
-            await synthesizer.SpeakTextAsync(speechText);
-            
+                using var synthesizer = new SpeechSynthesizer(config);
+
+                await synthesizer.SpeakTextAsync(speechText);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
     }
 }

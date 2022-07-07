@@ -8,16 +8,16 @@ namespace MotivityTravels.BusinessLogic
         //this method will return start and end dates
         public async Task<TravelDetails> GetUserTravelDateInformation(Root root)
         {
+            TravelDetails checkDate = new TravelDetails();
             try
             {
-                TravelDetails checkDate = new TravelDetails();
                 if (root.prediction.entities.datetimeV2 != null)
                 {
                     if (root.prediction.entities.datetimeV2[0].values[0].resolution[0].start != null)
-                         checkDate.FromDate = Convert.ToDateTime(root.prediction.entities.datetimeV2[0].values[0].resolution[0].start);
+                        checkDate.FromDate = Convert.ToDateTime(root.prediction.entities.datetimeV2[0].values[0].resolution[0].start);
 
                     if (root.prediction.entities.datetimeV2[0].values[0].resolution[0].end != null)
-                         checkDate.ToDate = Convert.ToDateTime(root.prediction.entities.datetimeV2[0].values[0].resolution[0].end);
+                        checkDate.ToDate = Convert.ToDateTime(root.prediction.entities.datetimeV2[0].values[0].resolution[0].end);
                 }
                 return checkDate;
             }
@@ -25,15 +25,21 @@ namespace MotivityTravels.BusinessLogic
             {
                 throw;
             }
+            finally
+            {
+                root = null;
+                checkDate = null;
+            }
         }
 
         //this method will execute, in case of start ot end dates missing
         public async Task<TravelDetails> GetSpecificTravelDateEntities()
         {
+
+            Common _commonServices = new Common();
+            TravelDetails entities = new TravelDetails();
             try
             {
-                Common _commonServices = new Common();
-                TravelDetails entities = new TravelDetails();
                 if (entities.FromDate == null || entities.ToDate == null)
                 {
                     string textFromSource = "please tell us from date and to date";
@@ -50,6 +56,12 @@ namespace MotivityTravels.BusinessLogic
 
                 throw;
             }
+            finally
+            {
+                entities = null;
+                _commonServices = null;
+            }
+
         }
     }
 }

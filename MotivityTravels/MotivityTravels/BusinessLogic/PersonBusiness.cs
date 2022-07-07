@@ -7,9 +7,9 @@ namespace MotivityTravels.BusinessLogic
     {
         public async Task<TravelDetails> CheckPersonEntities(Root root)
         {
+            TravelDetails personEntities = new TravelDetails();
             try
             {
-                TravelDetails personEntities = new TravelDetails();
                 if (root.prediction.entities.TotalPersons[0].Adults != null)
                 {
                     if (root.prediction.entities.number[0] != null)
@@ -21,7 +21,7 @@ namespace MotivityTravels.BusinessLogic
                         personEntities.ChildernCount = root.prediction.entities.number[1];
                     }
 
-                       // string adults = root.prediction.entities.TotalPersons[0].Adults[0];
+                    // string adults = root.prediction.entities.TotalPersons[0].Adults[0];
                 }
                 return personEntities;
             }
@@ -30,13 +30,19 @@ namespace MotivityTravels.BusinessLogic
 
                 throw;
             }
+            finally
+            {
+                personEntities = null;
+                root = null;
+            }
         }
         //this method will return, adults and child count
         public async Task<TravelDetails> GetSpecificPersonEntities()
         {
+            Common _commonLogic = new Common();
             try
             {
-                Common _commonLogic = new Common();
+
                 string speechText = "please tell us number of adult and children";
                 Root numberOfPersons = await _commonLogic.GetSpecificUserIntent(speechText);
                 TravelDetails personEntities = await _commonLogic.CheckUserEntities(numberOfPersons);
@@ -47,7 +53,10 @@ namespace MotivityTravels.BusinessLogic
             {
                 throw;
             }
-
+            finally
+            {
+                _commonLogic = null;
+            }
         }
     }
 }
