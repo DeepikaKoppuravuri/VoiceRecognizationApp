@@ -18,15 +18,20 @@ namespace MotivityTravels.BusinessLogic
             {
                 if (root.prediction.entities.Destination != null)
                 {
-
+                   
                     if (root.prediction.entities.Destination[0].FromSource != null)
                     {
                         checkLocationDetails.FromSource = (root.prediction.entities.Destination[0].FromSource[0]).Substring(4);
                     }
-                    if (root.prediction.entities.Destination[1].ToDestination != null)
+                    if (root.prediction.entities.Destination.Count > 0)
                     {
-                        checkLocationDetails.ToDestination = (root.prediction.entities.Destination[1].ToDestination[0]).Substring(3);
+                        if (root.prediction.entities.Destination[1].ToDestination != null)
+                        {
+                            checkLocationDetails.ToDestination = (root.prediction.entities.Destination[1].ToDestination[0]).Substring(3);
+                        }
                     }
+                    
+
 
                 }
                 return checkLocationDetails;
